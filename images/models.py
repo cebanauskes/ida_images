@@ -23,6 +23,7 @@ class Image(models.Model):
                                          blank=True, null=True)
 
     def get_remote_image(self):
+        """Метод для загрузки изображения через url"""
         if self.url and not self.image:
             response = urlretrieve(self.url)
             self.image.save(os.path.basename(self.url), 
@@ -35,6 +36,7 @@ class Image(models.Model):
 
     @property
     def get_name(self):
+        """Метод получения имени файла"""
         return os.path.basename(self.image.url)
 
 

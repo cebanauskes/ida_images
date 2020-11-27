@@ -1,3 +1,4 @@
+import requests
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
@@ -20,20 +21,24 @@ class ImageForm(forms.ModelForm):
         image = cleaned_data.get('image')
 
         if (url and image) or (not url and not image):
-            raise ValidationError('Только одно поле должно быть заполнено')
+            raise ValidationError(
+        'Только одно поле должно быть заполнено '
+        'Либо проверьте правильность введенной ссылки')
 
         return cleaned_data
 
     def clean_url(self):
+        """Проверяет, работоспособна ли ссылка и
+        работоспособна ли ссылка
+        """
         url = self.cleaned_data.get('url')
 
         if url == None or url == '':
             return url
 
-        try:
-            urlopen(url)
-        except HTTPError:
-            raise ValidationError('Невозможно получить изображение по ссылке')
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise ValidationError('Ссылка не работает, попробуйте другую')
 
         if not valid_url_mimetype(url):
             raise ValidationError('Неправильное расширение файла (ожидается изображение)',)
@@ -49,6 +54,7 @@ class ResizeForm(forms.Form):
         max_value=10000, min_value=1, label='Высота', required=False)
 
     def clean(self):
+        """Проверяет, чтобы хотя бы одно поле было заполнено"""
         cleaned_data = self.cleaned_data
         width = cleaned_data.get('width')
         height = cleaned_data.get('height')
