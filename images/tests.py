@@ -9,7 +9,7 @@ class TestUploadImage(TestCase):
         self.client = Client()
 
     def test_upload_local(self):
-        with open('d164f536487949.571e7ee4b20f2.jpg', 'rb') as fp:
+        with open('test_image.jpg', 'rb') as fp:
             self.client.post('/add_image/', {'image': fp})
             image = Image.objects.all()[0]
 
